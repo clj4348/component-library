@@ -1,0 +1,177 @@
+<html>
+
+	<head>
+		<meta name="" charset="utf-8" content="" />
+		<title></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<link rel="stylesheet" type="text/css" href="../css/cropper.css" />
+	</head>
+	<style type="text/css">
+		/* 头像裁剪样式start  */
+		
+		* {
+			margin: 0;
+			padding: 0;
+		}
+		
+		.cut-header-mask {
+			position: fixed;
+			background: #000;
+			width: 100%;
+			height: 100%;
+			top: 0;
+			margin: auto;
+			z-index: 100;
+			transition: all 0.3s ease-in-out;
+		}
+		
+		.cropper-bg {
+			background: #333;
+		}
+		
+		.self_img_pop_up {
+			background: #fff;
+			border-radius: 0.5rem;
+			position: absolute;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			left: 0;
+			width: 96%;
+			height: 80%;
+			margin: auto;
+			padding-top: 1rem;
+		}
+		
+		.cut_img {
+			width: 94%;
+			height: 75%;
+			margin: 0 auto;
+		}
+		
+		.confirm_button {
+			width: 100%;
+			height: 25%;
+			text-align: center;
+			padding: 0 10%;
+		}
+		
+		.rotate_div {
+			width: 100%;
+			height: 100%;
+			overflow: hidden;
+			display: flex;
+			justify-content: space-between;
+			flex-wrap: wrap;
+			align-content: space-around;
+		}
+		
+		.picture_div {
+			border: none;
+			width: 80px;
+			height: 40px;
+			background: #e0b268;
+			border-radius: 0.5rem;
+			font-size: 18px;
+			color: #fff;
+			position: relative;
+			display: table;
+		}
+		
+		.picture_div input {
+			position: absolute;
+			opacity: 0;
+			left: 0;
+			top: 0;
+			height: 100%;
+			width: 100%;
+		}
+		
+		#imgTest {
+			height: 300px;
+			width: 100%;
+			background: #333;
+			overflow: hidden;
+		}
+		
+		.container {
+			position: absolute;
+			top: 50%;
+			left: 0;
+			transform: translateY(-50%);
+			-webkit-transform: translateY(-50%);
+			right: 0;
+			margin: auto;
+		}
+		
+		.back-cancle {
+			position: absolute;
+			top: 15px;
+			left: 15px;
+			font-size: 15px !important;
+			padding: 15px;
+			color: #fff;
+		}
+		
+		.cutting {
+			position: absolute;
+			bottom: 0px;
+			height: 50px;
+			left: 0;
+			color: #fff;
+			line-height: 50px;
+			width: 100%;
+			text-align: center;
+			background: #f2b035;
+			border-radius: 0;
+			padding: 0;
+			z-index: 100;
+		}
+		
+		.head-round {
+			position: relative;
+			width: 50px;
+			height: 50px;
+			overflow: hidden;
+			border-radius: 6px;
+		}
+		
+		.file-test {
+			position: absolute;
+			width: 100%;
+			height: 100%;
+			opacity: 0;
+		}
+		
+		.head-round img {
+			width: 100%;
+		}
+		/* 头像裁剪样式结束  */
+	</style>
+	</style>
+
+	<body>
+		<div id="app">
+			<div id="result" class="head-round">
+				<input type="file" @change="clickDt" @click="fileTest($event)" maxlength="1" class="file-test">
+				<img :src="headImg">
+			</div>
+			<!--
+            	头像裁剪组件 changeheadimg
+            	时间：2018-06-25
+            	描述：changeheadimg 子组件向父组件传值
+            		left 遮罩层的left值
+            		headimg 头像路径
+            		id: 用户id
+            		ref="profile" 父组件触发子组件事件
+           -->
+			<cutting-img ref="profile" @changeheadimg="changeheadimg" :headimg="headImg" :id="id" :left="left">
+			</cutting-img>
+		</div>
+	</body>
+
+</html>
+<script src="../js/vue.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="../js/cropper.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="../js/axios.min.js"></script>
+<script src="../js/cutheader.js" type="text/javascript" charset="utf-8"></script>
