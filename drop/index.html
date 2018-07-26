@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+	</head>
+	<style type="text/css">
+		* {
+			margin: 0;
+			padding: 0;
+		}
+		
+		.under-line-bg {
+			width: 230px;
+			height: 2px;
+			background: #e5e5e5;
+			margin: 100px auto 0;
+			position: relative;
+		}
+		
+		.up-line-bg {
+			position: absolute;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			margin: auto;
+			height: 4px;
+			background: #ffb600;
+		}
+		
+		.vertical-moulding {
+			display: block;
+			width: 4px;
+			height: 10px;
+			top: 0;
+			bottom: 0;
+			margin: auto;
+			position: absolute;
+			background: #ffb600;
+		}
+		
+		.vertical-moulding-1 {
+			left: 0px;
+			z-index: 10;
+		}
+		
+		.vertical-moulding-2 {}
+		
+		.vertical-moulding-box {
+			position: relative;
+			height: 100%;
+		}
+		
+		.angle-box{
+			position: absolute;
+			top: -26px;
+			left: 50%;
+			transform: translateX(-50%);
+		}
+		.angle-box.act .salary-con-l{
+			background: #ff8800;
+		}
+		.angle-box.act .salary-con-l:after{
+			border-top: 5px solid #ff8800;
+		}
+		.salary-con-l {
+			position: relative;
+			display: block;
+			font-size: 12px;
+			text-align: center;
+			padding: 2px 0;
+			width: 26px;
+			background: #ffb600;
+			color: #fff;
+			border-radius: 2px;
+		}
+		.salary-con-l:after{
+			position: absolute;
+			display: block;
+			content: '';
+			bottom: -4px;
+			left: 50%;
+			transform: translateX(-50%);
+			-webkit-transform: translateX(-50%);
+			width: 0;
+			height: 0;
+			border-left: 5px solid transparent;
+			border-right: 5px solid transparent;
+			border-top: 5px solid #FFB600;
+		}
+		
+		.rect-box {
+			position: relative;
+		}
+		
+		.rect {
+			position: absolute;
+			width: 26px;
+			height: 16px;
+			bottom: -30px;
+			left: 50%;
+			transform: translateX(-50%);
+			background: #e5e5e5;
+		}
+
+		.rect-box.act .rect{
+			background: #ccc;
+		}
+		.rect-box.act:after{
+			border-color: transparent transparent #ccc;
+		}	
+		.rect-box:after {
+			position: absolute;
+			display: block;
+			content: '';
+			top: 4px;
+			left: 50%;
+			transform: translateX(-50%);
+			width: 0;
+			height: 0;
+			border-width: 0 13px 10px;
+			border-style: solid;
+			border-color: transparent transparent #e5e5e5;
+			/*透明 透明  灰*/
+		}
+	</style>
+
+	<body>
+		<div id="app">
+			<div class="under-line-bg" ref="handelDropBox">
+				<div class="vertical-moulding vertical-moulding-1" 
+					ref="handelDrop" 
+					@touchstart.prevent="handelLineStart($event, 'left')" 
+					@touchmove.prevent="handelLineMove($event, 'left')" 
+					@touchend.prevent="handelLineEnd($event, 'left')" 
+					:style="{ left : lineLeft + 'px', zIndex: zIndexL}">
+					<div class="vertical-moulding-box">
+						<div class="angle-box" :class="{'act' : drag.angleBoxFlag}">
+							<span class="salary-con-l" v-html="salaryLeft + 'k'"></span>
+						</div>
+					</div>
+					<div class="rect-box" :class="{'act' : drag.rectBoxFlagL}">
+						<div class="rect"></div>
+					</div>
+				</div>
+				<div class="up-line-bg" :style="{
+						width: lindWidth + 'px',
+						right: boxRight + 'px'}">
+				</div>
+				<div class="vertical-moulding vertical-moulding-2"
+					:style="{ left : lineRight + 'px', zIndex: zIndexR}" 
+					@touchstart.prevent="handelLineStartRight($event)" 
+					@touchmove.prevent="handelLineMoveRight($event)" 
+					@touchend.prevent="handelLineEndRight($event)">
+					<div class="vertical-moulding-box">
+						<div class="angle-box" :class="{'act' : drag.angleBoxFlag}">
+							<span class="salary-con-l" v-html="salaryRgiht + 'k'"></span>
+						</div>
+					</div>
+					<div class="rect-box" :class="{'act' : drag.rectBoxFlagR }">
+						<div class="rect"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+
+</html>
+<script src="../js/vue.min.js" type="text/javascript" charset="utf-8"></script>
+<script>
+	var app = new Vue({
+		el: '#app',
+		data: function() {
+			return {
+				drag: {
+					flag: false, // 是否拖拽
+					flagRight: false, // 是否可拖拽
+					angleBoxFlag: false, // 薪资相等时的高亮控制
+					rectBoxFlagL: false, // 点击时高亮
+					rectBoxFlagR: false // 点击时高亮
+				},
+				convert: 0,// 换算
+				DropBoxWidth: 0, // 灰色条的宽度
+				lindWidth: 0, // 拖动条的宽度
+				lindWidthX: 0,
+				boxRight: 0,
+				boxRightMoveX: 0,
+				lineLeft: 0, // 左滑块的初始值
+				lineRight: 0, // 右滑块的初始值
+				salaryLeft: 10, // 最低的薪资范围
+				salaryRgiht: 14, // 最高的薪资范围
+				pointerX: 0,
+				lindWidthDefault: 0,
+				pointerRightX: 0,
+				zIndexL: 8,
+				zIndexR: 8
+			}
+		},
+		methods: {
+			// 左边的滑块 touchStart事件
+			handelLineStart: function(e) {
+				this.drag.rectBoxFlagL = true
+				this.drag.flag = true;
+				var touch = e.touches[0];
+				this.pointerX = touch.pageX - this.lineLeft;
+				this.lindWidthDefault = this.lindWidth + this.lineLeft;
+				this.zIndexL = 10;
+				
+			},
+			handelLineMove: function(e) {
+				var touch = e.touches[0];
+				if(this.drag.flag) {
+					if(touch.pageX - this.pointerX >= this.lineRight){
+						this.lineLeft = this.lineRight
+						this.salaryLeft = this.salaryRgiht
+						this.lindWidth = 0;
+						this.drag.angleBoxFlag = true 
+						return
+					}
+					if(touch.pageX - this.pointerX <= 0) {
+						this.lineLeft = 0
+						this.salaryLeft = 0
+						this.lindWidth = this.lineRight - this.lineLeft;
+						this.drag.angleBoxFlag = false;
+						return
+					}
+					if(this.lineLeft >= 0 && this.lineLeft <= this.DropBoxWidth) {
+						this.drag.angleBoxFlag = false;
+						this.lineLeft = touch.pageX - this.pointerX;
+						this.lindWidth = this.lindWidthDefault - (touch.pageX - this.pointerX);
+						this.salaryLeft = Math.round(this.lineLeft / this.convert) > 0 ? Math.round(this.lineLeft / this.convert) : 0;
+					}
+				}
+			},
+			handelLineEnd: function(e) {
+				this.drag.rectBoxFlagL = false;
+				this.drag.flag = false;
+				if(this.lindWidth === 0){
+					this.zIndexL = 10;
+				}else{
+					this.zIndexL = 8;
+				}
+			},
+			handelLineStartRight: function(e){
+				this.drag.rectBoxFlagR = true
+				this.drag.flagRight = true;
+				var touch = e.touches[0];
+				this.pointerRightX = touch.pageX - this.lineRight;
+				this.lindWidthDefault = this.lindWidth - this.lineRight;
+				this.boxRightMoveX = touch.pageX + this.boxRight;
+				this.zIndexR = 10;
+			},
+			handelLineMoveRight: function(e){
+				var touch = e.touches[0];
+				if(this.drag.flagRight) {
+					if(touch.pageX - this.pointerRightX <= this.lineLeft){
+						this.lineRight = this.lineLeft
+						this.boxRight = this.DropBoxWidth - this.lineRight
+						this.salaryRgiht = this.salaryLeft
+						this.lindWidth = 0;
+						this.drag.angleBoxFlag = true;
+						return
+					}
+					if(touch.pageX - this.pointerRightX <= 0) {
+						this.lineRight = 0
+						this.salaryRgiht = 0
+						this.lindWidth = this.lineRight - this.lineLeft;
+						this.drag.angleBoxFlag = false;
+						return
+					}
+					if(touch.pageX - this.pointerRightX >= this.DropBoxWidth) {
+						this.lineRight = this.DropBoxWidth
+						this.salaryRgiht = 30
+						this.lindWidth = this.lineRight - this.lineLeft;
+						this.boxRight = 0
+						this.drag.angleBoxFlag = false;
+						return
+					}
+					if(this.lineRight >= 0 && this.lineRight <= this.DropBoxWidth) {
+						this.lindWidth = this.lindWidthDefault + (touch.pageX - this.pointerRightX);
+						this.drag.angleBoxFlag = false;
+						this.boxRight = -(touch.pageX - this.boxRightMoveX);
+						this.lineRight = touch.pageX - this.pointerRightX;
+						this.salaryRgiht = Math.round(this.lineRight / this.convert ) > 0 ? Math.round(this.lineRight / this.convert) : 0;
+					}
+				}
+			},
+			handelLineEndRight: function(e){
+				this.drag.rectBoxFlagR = false;
+				this.drag.flagRight = false;
+				if(this.lindWidth === 0){
+					this.zIndexR = 20;
+				} else {
+					this.zIndexR = 8;
+				}
+			}
+		},
+		mounted: function() {
+			this.DropBoxWidth = this.$refs.handelDropBox.offsetWidth;
+			this.convert = this.DropBoxWidth / 30;
+			if(this.salaryLeft == this.salaryRgiht){
+				this.drag.angleBoxFlag = true
+			}
+			
+			if(this.salaryLeft >= 15){
+				this.zIndexL = 10;
+			}else {
+				this.zIndexR = 10;
+			}
+			
+			// 初始化判断
+			if(this.salaryLeft <= this.salaryRgiht){
+				this.lineLeft = this.salaryLeft * this.convert;
+				this.lineRight = this.salaryRgiht * this.convert;
+				this.boxRight = Math.abs(this.DropBoxWidth - this.salaryRgiht * this.convert);
+				this.lindWidth = Math.abs(this.DropBoxWidth - this.lineLeft - this.boxRight);
+			} else {
+				throw err = new Error( 'this.salaryLeft 必须小于或等于 this.salaryRgiht（ 最低薪资范围）' );
+			}
+		}
+	})
+</script>
