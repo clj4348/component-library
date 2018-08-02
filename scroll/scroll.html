@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <title>Pull to Refresh</title>
+    <meta name="viewport" content="width=device-width,height=device-height,inital-scale=1.0,maximum-scale=1.0,user-scalable=no;" />
+    <style>
+    	*{
+    		margin: 0;
+    		padding: 0;
+    	}
+    	html,body{
+    		height: 100%;
+    		overflow: hidden;
+    	}
+		.scroll-container{
+			padding-top: 60px;
+			height: 100%;
+			box-sizing: border-box;
+			padding-bottom: 60px;
+		}
+        .outerScroller{
+        	background: #f2f2f2;
+        	position: relative;
+        	overflow: hidden;
+        	height: 100%;
+        }
+        .scrollcon{
+        	width:100%;
+        	position: absolute;
+        	margin-top:0px;
+            left:0px;
+            padding:0px;
+            top:0px;
+            transition-timing-function: ease-out;
+        }
+        .scroll-item{
+        	list-style-type: none;
+            height:35px;
+            background: #e5e5e5;
+            border-bottom: solid 1px #fff;
+            text-align: left;
+            line-height: 35px;
+            padding-left:15px;
+        }
+        .scrollbar-box{
+        	position: absolute;
+        	height: 100%;
+        	width: 2px;
+        	top: 0;
+        	right: 0;
+        	background: #EEEEEE;
+        }
+        .scroll-bar{
+        	position: relative;
+        	height: 100%;
+        }
+        .scroll-con-active{
+        	position: absolute;
+        	top: 0;
+        	right: 0;
+        	height: 10px;
+        	width: 2px;
+        	background: #212121;
+        }
+    </style>
+</head>
+<body>
+<div class="scroll-container">
+	<div class="outerScroller">
+		<ul class ="scrollcon">
+		    <li class="scroll-item">朋友圈1</li>
+		    <li class="scroll-item">朋友圈2</li>
+		    <li class="scroll-item">朋友圈3</li>
+		    <li class="scroll-item">朋友圈4</li>
+		    <li class="scroll-item">朋友圈4</li>
+		    <li class="scroll-item">朋友圈4</li>
+		    <li class="scroll-item">朋友圈4</li>
+		    <li class="scroll-item">朋友圈4</li>
+		    <li class="scroll-item">朋友圈4</li>
+		    <li class="scroll-item">朋友圈4</li>
+		    <li class="scroll-item">朋友圈4</li>
+		    <li class="scroll-item">朋友圈4</li>
+		    <li class="scroll-item">朋友圈4</li>
+		    <li class="scroll-item">朋友圈4</li>
+		    <li class="scroll-item">朋友圈4</li>
+		    <li class="scroll-item">朋友圈4</li>
+		    <li class="scroll-item">朋友圈4</li>
+		    <li class="scroll-item">朋友圈4</li>
+		    <li class="scroll-item">朋友圈4</li>
+		    <li class="scroll-item">朋友圈4</li>
+		    <li class="scroll-item">朋友圈1</li>
+		    <li class="scroll-item">朋友圈2</li>
+		    <li class="scroll-item">朋友圈4</li>
+		    <li class="scroll-item">朋友圈4</li>
+		    <li class="scroll-item">朋友圈4</li>
+		    <li class="scroll-item">朋友圈4</li>
+		    <li class="scroll-item">朋友圈4</li>
+		    <li class="scroll-item">朋友圈4</li>
+		    <li class="scroll-item">朋友圈4</li>
+		    <li class="scroll-item">朋友圈4</li>
+		    <li class="scroll-item">朋友圈4</li>
+		    <li class="scroll-item">朋友圈4</li>
+		    <li class="scroll-item">朋友圈1</li>
+		    <li class="scroll-item">朋友圈2</li>
+		    <li class="scroll-item">朋友圈4</li>
+		    <li class="scroll-item">朋友圈4</li>
+		    <li class="scroll-item">朋友圈4</li>
+		    <li class="scroll-item">朋友圈4</li>
+		    <li class="scroll-item">朋友圈4</li>
+		    <li class="scroll-item">朋友圈4</li>
+		    <li class="scroll-item">朋友圈4</li>
+		    <li class="scroll-item">朋友圈4</li>
+		    <li class="scroll-item">朋友圈4</li>
+		    <li class="scroll-item">朋友圈4</li>
+		    <li class="scroll-item">朋友圈1</li>
+		    <li class="scroll-item">朋友圈2</li>
+		</ul>
+		
+		<div class="scrollbar-box">
+			<div class="scroll-bar">
+				<span class="scroll-con-active"></span>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+	
+	class scroll{
+		constructor(params){
+			this.scrollDom = document.querySelector('.scrollcon'); // 文档节点
+			this.scrollBar = document.querySelector('.scroll-con-active'); // 滚动条 
+		    this.outerScroller = document.querySelector('.outerScroller'); // 可视区域
+		    this.outerScrollerHeight = this.outerScroller.offsetHeight; // 可视高度
+		    this.scrollDomHeight = this.scrollDom.offsetHeight; // 文档高度
+		    this.touchStartFlag = false;
+		    this.touchStart = 0;
+		    this.touchDis = 0;
+		    this.top = this.scrollDom.offsetTop;
+		    this.time = null;
+		    this.scrollBarHeight = 0;
+		    this.viewScrollH = 0;
+		}
+		scrollDown(e){
+			var e = e|| window.event
+			e.preventDefault()
+			var _this = this
+	      	var touch = event.targetTouches[0];
+	        // 把元素放在手指所在的位置	
+	        this.touchStartFlag = true;
+	        this.touchStart = touch.pageY - this.touchDis;
+	        this.scrollDom.style.transitionDuration = "0ms";
+	        this.scrollBar.style.transitionDuration = "0ms";
+		}
+		scrollMove(e){
+			var e = e|| window.event
+			e.preventDefault()
+			this.scrollDom.style.transitionDuration = "0ms"
+			let _this = this;
+	      	var touch = event.targetTouches[0];
+	        // 把元素放在手指所在的位置
+	        if(this.touchStartFlag){
+	        	clearInterval(_this.time)
+	        	let touchMove = touch.pageY - this.touchStart;
+				this.top = touchMove;
+	        	if(touchMove >= 50){
+	        		this.scrollDom.style.transform = `translate3d(0, 50px, 0)`;
+	        	}else if(touchMove <= -(this.viewScrollH + 50)){
+	        		this.scrollDom.style.transform = `translate3d(0, ${-(this.viewScrollH + 50)}px, 0)`;
+	        	} else {
+	        		this.touchDis = touchMove;
+	        		this.scrollDom.style.transform = `translate3d(0, ${touchMove}px, 0)`;
+	        	}
+	        	this.scrollBar.style.transform = `translate3d(0, ${-parseFloat (touchMove* this.outerScrollerHeight / this.scrollDomHeight)}px, 0)`;
+	        }
+		}
+		scrollEnd(e){
+			var _this = this
+			this.scrollDom.style.transitionDuration = "300ms"
+			this.scrollBar.style.transitionDuration = "300ms";
+			this.touchStartFlag = false;
+			this.touchStart = 0;
+			console.log(this.touchDis)
+			this.scrollDom.style.transform = `translate3d(0, ${this.touchDis}px, 0)`;
+			
+	        //if(top>70)refresh();
+	        if(this.top > 0){
+	           this.touchDis = 0;
+	           this.scrollDom.style.transform = `translate3d(0px,0px, 0px)`;
+	           this.scrollBar.style.transform =`translate3d(0px,0px, 0px)`
+	        }
+	        if(Math.abs(_this.top) >= _this.viewScrollH){
+	        	this.touchDis = -_this.viewScrollH;
+	        	this.scrollBar.style.transform =`translate3d(0, ${this.outerScrollerHeight - this.scrollBarHeight}px, 0)`;
+            	this.scrollDom.style.transform = `translate3d(0, ${-_this.viewScrollH}px, 0)`;
+	        }
+		}
+		init() {
+			this.viewScrollH = this.scrollDomHeight - this.outerScrollerHeight
+			this.scrollBarHeight = parseFloat(this.outerScrollerHeight * this.outerScrollerHeight / this.scrollDomHeight) // 滚动条高度
+			this.scrollBar.style.height = this.scrollBarHeight + 'px'
+			this.bindEvent();
+		}
+		refresh(){
+	        for(var i = 3;i > 0; i--){
+	            var node = document.createElement("li");
+	            node.innerHTML = "I'm new" + i;
+	            scroll.insertBefore(node,scroll.firstChild);
+	        }
+	    }
+		bindEvent(){
+			var _this = this;
+			this.outerScroller.addEventListener('touchstart', () => {
+				_this.scrollDown();	
+			})
+			this.outerScroller.addEventListener('touchmove', () => {
+				_this.scrollMove();	
+			})
+			this.outerScroller.addEventListener('touchend', () => {
+				_this.scrollEnd();	
+			})
+		}
+	}
+	const options = {
+		
+	}
+	
+    const iScroll = new scroll(options);
+    iScroll.init()
+</script>
+</body>
+</html>

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<title>滑动条</title>
+		<meta charset="utf-8">
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+	</head>
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+		}
+		
+		#content {
+			margin-top: 50px;
+			width: 100%;
+			height: 200px;
+			background: #eeeeee;
+			overflow: hidden;
+			position: relative;
+			/**transform: translate(0px, -70px);*/
+		}
+		
+		#scoll {
+			overflow: hidden;
+		}
+		
+		#content2 {
+			margin-top: 50px;
+			width: 100%;
+			height: 200px;
+			background: red;
+			overflow: hidden;
+			position: relative;
+			/**transform: translate(0px, -70px);*/
+		}
+		
+		#scoll2 {
+			overflow: hidden;
+		}
+		
+		.scrollbars {
+			position: absolute;
+			height: 100%;
+			right: 0;
+			top: 0;
+			width: 5px;
+			border-radius: 5px;
+		}
+		
+		.scollb {
+			position: absolute;
+			right: 0;
+			top: 0;
+			width: 100%;
+			background: #999999;
+			border-radius: 5px;
+		}
+	</style>
+
+	<body>
+		<div id="content">
+			<div id="scoll">
+				<p>1111</p>
+				<p>2222</p>
+				<p>3333</p>
+				<p>4444</p>
+				<p>5555</p>
+				<p>6666</p>
+				<p>7777</p>
+				<p>8888</p>
+				<p>9999</p>
+				<p>0000</p>
+				<p>aaaa</p>
+				<p>bbbb</p>
+				<p>cccc</p>
+				<p>dddd</p>
+				<p>eeee</p>
+				<p>9999</p>
+				<p>0000</p>
+				<p>aaaa</p>
+				<p>bbbb</p>
+				<p>cccc</p>
+				<p>dddd</p>
+				<p>eeee</p>
+				<p>9999</p>
+				<p>0000</p>
+				<p>aaaa</p>
+				<p>bbbb</p>
+				<p>cccc</p>
+				<p>dddd</p>
+				<p>eeee</p>
+				<p>9999</p>
+				<p>0000</p>
+				<p>aaaa</p>
+				<p>bbbb</p>
+				<p>cccc</p>
+				<p>dddd</p>
+				<p>eeee</p>
+				<p>9999</p>
+				<p>0000</p>
+				<p>aaaa</p>
+				<p>bbbb</p>
+				<p>cccc</p>
+				<p>dddd</p>
+				<p>eeee</p>
+			</div>
+		</div>
+	</body>
+
+	<script>
+		/**
+		 * Created by hechao on 2017/6/25.
+		 */
+		(function() {
+
+			/**添加window对象hScoll属性*/
+			window.hScoll = {
+
+				buildScoll: function(el, options) {
+					App.init(el, options);
+				}
+			}
+
+			var App = {
+
+				/**初始化组件*/
+				init: function(el, option) {
+					App.options = option;
+					App.prevY = 0;
+					App.el = document.getElementById(el);
+					App.scoll = this.el.children[0];
+					App.h = this.el.offsetHeight; //滑动范围高度
+					App.ch = this.el.scrollHeight; //内容的高度
+					console.log(this.h, this.ch)
+					if(parseFloat(this.h) <= parseFloat(this.ch)) {
+						App.sdiv = document.createElement('div');
+						App.scollb = document.createElement('div');
+						App.sdiv.setAttribute('class', 'scrollbars');
+						App.scollb.setAttribute('class', 'scollb');
+						App.scollb.style.height = parseFloat(this.h) * parseFloat(this.h) / parseFloat(this.ch) + 'px';
+						App.el.appendChild(this.sdiv);
+						App.sdiv.appendChild(this.scollb);
+						App.initevent();
+					}
+				},
+
+				/**绑定事件*/
+				initevent: function() {
+					App.el.addEventListener('touchstart', App.touchstart, false);
+					App.el.addEventListener('touchmove', App.touchmove, false);
+					App.el.addEventListener('touchend', App.touchend, false);
+				},
+
+				/**记录滑动初始位置*/
+				touchstart: function(e) {
+					var point = App.getPoint(e);
+					App.startY = point.pageY;
+				},
+
+				/**手指移动时，滚动条滚动*/
+				touchmove: function(e) {
+					e.preventDefault(); //阻止默认行为
+					var point = App.getPoint(e);
+					App.moveY = point.pageY;
+					App.deltaY = App.startY - App.moveY;
+					if((App.prevY - App.deltaY) <= 0 && (App.prevY - App.deltaY) >= -(App.ch - App.h)) {
+						App.domove(App.prevY - App.deltaY);
+					}
+					if(App.options.interactiveScrollbars) {
+						App.domove2(App.prevY - App.deltaY);
+					} else {
+						if((App.prevY - App.deltaY) <= 0 && (App.prevY - App.deltaY) >= -(App.ch - App.h)) {
+							App.domove2(App.prevY - App.deltaY);
+						}
+					}
+				},
+
+				/**手指离开时，判断位置*/
+				touchend: function(e) {
+					App.prevY = App.prevY - App.deltaY;
+					if(App.prevY >= 0) {
+						App.prevY = 0;
+						App.domove(App.prevY, true);
+						App.domove2(App.prevY, true);
+					}
+					if(App.prevY <= -(App.ch - App.h)) {
+						App.prevY = -(App.ch - App.h);
+						App.domove(App.prevY, true);
+						App.domove2(App.prevY, true);
+					}
+				},
+
+				getPoint: function(e) {
+					return e.touches ? e.touches[0] : e;
+				},
+
+				/**内容滑动*/
+				domove: function(y, t) {
+					if(t) {
+						App.scoll.setAttribute('style', 'transform: translate(0px, ' + y + 'px);transition:transform 300ms ease');
+					} else {
+						App.scoll.setAttribute('style', 'transform: translate(0px, ' + y + 'px);transition:transform 0ms ease');
+					}
+				},
+
+				/**滚动条滑动*/
+				domove2: function(y, t) {
+					if(t) {
+						App.scollb.setAttribute('style', 'transform: translate(0px, ' + -parseFloat(y) * parseFloat(App.h) / parseFloat(App.ch) + 'px);transition:transform 0ms ease;height:' + parseFloat(App.h) * parseFloat(App.h) / parseFloat(App.ch) + 'px' + '');
+					} else {
+						App.scollb.setAttribute('style', 'transform: translate(0px, ' + -parseFloat(y) * parseFloat(App.h) / parseFloat(App.ch) + 'px);transition:transform 0ms ease;height:' + parseFloat(App.h) * parseFloat(App.h) / parseFloat(App.ch) + 'px' + '');
+					}
+				}
+			}
+		})();
+		var options = {
+			interactiveScrollbars: true
+		}
+		window.hScoll.buildScoll('content', options);
+	</script>
+
+</html>
