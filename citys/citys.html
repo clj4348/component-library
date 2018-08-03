@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	</head>
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+		}
+		
+		.city-mask {
+			position: fixed;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			margin: auto;
+			background: rgba(0, 0, 0, 0.5);
+		}
+		
+		.city-con {
+			position: fixed;
+			width: 100%;
+			background: #fff;
+			top: 100%;
+			transition: all 0.3s linear;
+			-webkit-transition: all 0.3s linear;
+		}
+		
+		.all-area {
+			position: relative;
+		}
+		
+		.all-area-title {
+			font-size: 16px;
+			color: #333;
+			height: 60px;
+			line-height: 60px;
+			text-align: center;
+		}
+		
+		.close-city-con {
+			position: absolute;
+			width: 24px;
+			height: 24px;
+			top: 0;
+			right: 20px;
+			bottom: 0;
+			margin: auto;
+		}
+		
+		.close-city-line {
+			position: relative;
+			display: block;
+			height: 100%;
+			width: 100%;
+			transform: rotate(45deg);
+			-webkit-transform: rotate(45deg);
+		}
+		
+		.close-city-line:after,
+		.close-city-line:before {
+			display: block;
+			position: absolute;
+			content: '';
+			top: 0;
+			right: 0;
+			left: 0;
+			bottom: 0;
+			margin: auto;
+			background: #ccc;
+		}
+		
+		.close-city-line:after {
+			width: 100%;
+			height: 1px;
+		}
+		
+		.close-city-line:before {
+			width: 1px;
+			height: 100%;
+		}
+		
+		.city-title-list {
+			width: 100%;
+			padding: 0px 10px;
+			box-sizing: border-box;
+			font-size: 0;
+			border-bottom: 1px solid #e5e5e5;
+		}
+		
+		.city-title-item {
+			display: inline-block;
+			padding: 0 5px 10px 5px;
+			font-size: 14px;
+			color: #333;
+			margin-right: 5px;
+			position: relative;
+		}
+		
+		.city-title-item.city-act {
+			color: #ff7b00;
+		}
+		
+		.city-title-item.city-act:after {
+			position: absolute;
+			left: 0;
+			bottom: -1px;
+			display: block;
+			content: "";
+			width: 100%;
+			height: 2px;
+			background: #ff7b00;
+		}
+		
+		.city-content-item {
+			height: 40px;
+			font-size: 14px;
+			color: #333;
+			padding-left: 20px;
+			display: flex;
+			align-items: center;
+		}
+		
+		.city-content-item span {}
+		
+		.city-content-item:active {
+			background: #f5f5f5;
+		}
+		
+		.city-content-item.city-select-act {
+			position: relative;
+			color: #ff7b00;
+		}
+		
+		.city-content-item.city-select-act:after {
+			display: block;
+			position: absolute;
+			content: '';
+			height: 5px;
+			width: 5px;
+			border-radius: 50%;
+			top: 0;
+			left: 10px;
+			bottom: 0;
+			margin: auto;
+			background: #ff7b00;
+		}
+		
+		.city-content-list {
+			height: 240px;
+			overflow-y: auto;
+		}
+	</style>
+
+	<body>
+		<div class="app" id="city">
+			<input type="" name="" id="" value="" />
+			<div class="address-select" @click="showCityCon()" v-html="fullName"></div>
+			<citys-component ref="maskTrigger" @cityselect="citySelect" :defaultCityList="defaultCityList"></citys-component>
+
+	</body>
+
+</html>
+<script src="../js/vue.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="citys.js" type="text/javascript" charset="utf-8"></script>
+<script src="common.js" type="text/javascript" charset="utf-8"></script>
