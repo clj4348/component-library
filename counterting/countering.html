@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8" />
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+	</head>
+	<style type="text/css">
+		* {
+			margin: 0;
+			padding: 0;
+		}
+		
+		ul,
+		li {
+			list-style: none;
+		}
+		
+		html {
+			height: 100%;
+		}
+		
+		body {
+			color: #fff;
+			height: 100%;
+			font-family: arial;
+		}
+		
+		.big-container {
+			height: 100%;
+			max-width: 500px;
+			background: #080021;
+			margin: auto;
+		}
+		
+		.view-num {
+			position: relative;
+			width: 100%;
+			height: 20%;
+			padding-top: 20%;
+		}
+		
+		.show-num {
+			position: absolute;
+			width: 94%;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			text-align: right;
+			font-size: 24px;
+			margin: auto;
+			overflow: hidden;
+		}
+		
+		.counter-box {
+			position: fixed;
+			height: 50%;
+			bottom: 10%;
+			z-index: 10;
+			width: 100%;
+			max-width: 500px;
+			margin: auto;
+		}
+		
+		.counter-box ul {
+			padding: 0 15px;
+			font-size: 0;
+			height: 100%;
+		}
+		
+		.counter-box ul li {
+			float: left;
+			width: 25%;
+			font-size: 20px;
+			text-align: center;
+			height: 20%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			cursor: pointer;
+		}
+		
+		.counter-box ul li:active {
+			background: rgba(100, 100, 100, 0.1);
+		}
+		
+		.clearfix:after {
+			display: block;
+			content: '';
+			width: 0;
+			height: 0;
+			clear: both;
+		}
+		
+		.data-count span {
+			height: 50px;
+			width: 50px;
+			border-radius: 50%;
+			background: #221e2f;
+			line-height: 50px;
+			font-size: 34px;
+		}
+		
+		.counter-box ul li.data-count:active,
+		.counter-box ul li.data-count-equal:active {
+			background: #080021;
+		}
+		
+		.data-count span:active {
+			background: #1a152c;
+		}
+		
+		.data-count-equal span {
+			height: 60px;
+			width: 60px;
+			border-radius: 50%;
+			background: #ff9100;
+			line-height: 60px;
+			font-size: 34px;
+		}
+	</style>
+
+	<body>
+		<div class="big-container">
+			<div class="view-num">
+				<div class="show-num" id="showView">0</div>
+			</div>
+			<div class="counter-box">
+				<ul class="clearfix" id="counterBox">
+					<li class="" id="clearEmpty">c</li>
+					<li class="" id="goback">←</li>
+					<li class="count" data-num="%">%</li>
+					<li class="data-count"><span class="count" data-num="/">÷</span></li>
+					<li class="num" data-num="7">7</li>
+					<li class="num" data-num="8">8</li>
+					<li class="num" data-num="9">9</li>
+					<li class="data-count"><span class="count" data-num="×">×</span></li>
+					<li class="num" data-num="4">4</li>
+					<li class="num" data-num="5">5</li>
+					<li class="num" data-num="6">6</li>
+					<li class="data-count"><span class="count" data-num="-">-</span></li>
+					<li class="num" data-num="1">1</li>
+					<li class="num" data-num="2">2</li>
+					<li class="num" data-num="3">3</li>
+					<li class="data-count"><span class="count" data-num="+">+</span></li>
+					<li class="num" data-num="00">00</li>
+					<li class="num" data-num="0">0</li>
+					<li class="num" data-num=".">.</li>
+					<li class="data-count-equal"><span id="equal">=</span></li>
+				</ul>
+			</div>
+		</div>
+	</body>
+
+</html>
+<script type="text/javascript">
+	window.onload = function() {
+		function g(id) {
+			return document.getElementById(id);
+		}
+
+		function c(cls) {
+			return document.querySelectorAll(cls);
+		}
+		var oldHtml = 0;
+		var newHtml = "";
+		var initNum;
+		var disShow;
+		var btnCount;
+
+		function showTpl(obj) {
+			if(initNum) {
+				newHtml = obj.getAttribute('data-num');
+			} else {
+				newHtml += obj.getAttribute('data-num');
+			}
+			g('showView').innerHTML = newHtml;
+		}
+		//加减乘除
+		function jscount(obj) {
+			oldHtml = newHtml;
+			newHtml = "";
+			btnCount = obj.getAttribute('data-num'); //获取加减乘除的属性
+		}
+
+		function display() {
+			oldHtml = parseFloat(oldHtml); //将字符串转化为浮点数
+			newHtml = parseFloat(newHtml);
+			switch(btnCount) {
+				case '-':
+					initNum = oldHtml - newHtml;
+					break;
+				case '+':
+					initNum = oldHtml + newHtml;
+					break;
+				case '/':
+					if(newHtml == '0') {
+						initNum = '分母不能为0';
+						console.log(initNum);
+					} else {
+						initNum = oldHtml / newHtml;
+					}
+					break;
+				case '×':
+					initNum = oldHtml * newHtml;
+					break;
+				case '%':
+					initNum = oldHtml / 100;
+					break;
+			}
+			if(isNaN(initNum)) {
+				initNum = newHtml;
+			}
+			g('showView').innerHTML = initNum;
+			newHtml = initNum;
+		}
+		//数字按键
+		for(var i = 0; i < c('.num').length; i++) {
+			c('.num')[i].onclick = function() {
+				showTpl(this);
+			}
+		}
+		//加减乘除
+		for(var i = 0; i < c('.count').length; i++) {
+			c('.count')[i].onclick = function() {
+				jscount(this);
+			}
+		}
+		//清空
+		g('clearEmpty').onclick = function() {
+			g('showView').innerHTML = '0';
+			newHtml = " ";
+		}
+		g('equal').onclick = function() {
+			display();
+		}
+		//退回上步
+		g('goback').onclick = function() {
+			//匹配最后一个字符替换为空
+			newHtml = g('showView').innerHTML.replace(/.$/, '');
+			g('showView').innerHTML = newHtml;
+			if(g('showView').innerHTML == "") {
+				g('showView').innerHTML = 0;
+			}
+		}
+	}
+</script>
